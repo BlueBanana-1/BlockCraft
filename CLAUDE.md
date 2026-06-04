@@ -12,7 +12,31 @@ npm run preview  # Serve the production build locally
 
 There are no tests or linters configured. The game runs entirely in the browser — verify changes by loading `http://localhost:517x` after `npm run dev`.
 
-After every meaningful change: `git add <files> && git commit -m "..." && git push`
+## Git Workflow
+
+**After every meaningful change, commit and push to GitHub.** This is non-negotiable — it ensures work is never lost and the repo always reflects the current state.
+
+```bash
+git add <changed files>
+git commit -m "Short imperative summary
+
+Optional body explaining why, not what."
+git push
+```
+
+Commit message conventions:
+- Imperative mood: "Add cave generation", "Fix player clipping on chunk edges", "Increase render distance"
+- Scope first if helpful: "Terrain: add biome variation", "UI: show selected block name"
+- Never batch unrelated changes into one commit
+
+**When to commit** (not exhaustive — when in doubt, commit):
+- A feature or sub-feature is working
+- A bug is fixed
+- A file is added, deleted, or significantly restructured
+- Constants are tuned to a stable value
+- CLAUDE.md or documentation is updated
+
+GitHub repo: **https://github.com/BlueBanana-1/BlockCraft** — branch `master`, remote `origin`.
 
 ## Architecture
 
@@ -84,6 +108,3 @@ One shared `MeshLambertMaterial` with `alphaTest: 0.5` is used by all chunk mesh
 | `REACH_DISTANCE` | 5.0 | Max block interaction range |
 | `CHUNK_HEIGHT` | 128 | World height; changing requires re-indexing logic |
 
-## GitHub
-
-Repo: **https://github.com/BlueBanana-1/BlockCraft** — branch `master`, remote `origin`.
