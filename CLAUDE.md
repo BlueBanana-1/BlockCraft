@@ -48,7 +48,7 @@ BlockCraft is a browser-based voxel game. All source lives in `src/`. No framewo
 Controls (input state)
   → Player.update(dt)        — physics, camera yaw/pitch
   → World.update(x, z, 2)   — load/unload chunks, rebuild ≤2 dirty meshes
-  → raycast(world, cam, dir) — DDA traversal → hit block + face normal
+  → raycast(world, eye, dir) — DDA traversal → hit block + face normal (eye/dir from player, not camera)
   → world.setBlock(...)      — break/place (marks chunk dirty)
   → renderer.render()        — Three.js draw call
 ```
@@ -82,6 +82,12 @@ AABB is 0.6×1.8×0.6. Collision is resolved **per axis in X→Y→Z order** —
 Camera uses `rotation.order = 'YXZ'` — critical for correct first-person look without gimbal lock. Movement vectors are derived from `yaw` only (not pitch), so the player always moves horizontally:
 - `forward = (-sin(yaw), 0, -cos(yaw))`
 - `right   = ( cos(yaw), 0, -sin(yaw))`
+
+**Third-person mode** (toggle with `R`): `player.thirdPerson` flips the camera between first-person (camera at eye) and third-person (camera 4.5 units behind + 1.8 above, `lookAt` player body). The player model (`player.model`) is shown only in third-person and rotated to match `yaw`. `getLookDirection()` and `getEyePosition()` always return values from yaw/pitch — never from the camera — so raycasting works identically in both modes.
+
+### Player model (`PlayerModel.js`)
+
+`createPlayerModel()` returns a `THREE.Group` of colored `BoxGeometry` meshes (head, hair, eyes, body, arms, legs, boots). Group origin = player feet (y=0). The front face points in local **−Z**, which aligns with the player's forward direction when `group.rotation.y = player.yaw`. Add the group to the scene and assign it to `player.model`.
 
 ### Raycasting (`Raycast.js`)
 
