@@ -20,6 +20,9 @@ export class Player {
     this.yaw   = 0;
     this.pitch = 0;
     this.onGround = false;
+
+    this.thirdPerson = false;
+    this.model = null;
   }
 
   update(dt) {
@@ -130,20 +133,54 @@ export class Player {
   }
 
   _updateCamera() {
-    this.camera.position.set(
+    if (this.thirdPerson) {
+      const BACK = 4.5;
+      const UP   = 1.8;
+      this.camera.position.set(
+        this.position.x + Math.sin(this.yaw) * BACK,
+        this.position.y + EYE_HEIGHT + UP,
+        this.position.z + Math.cos(this.yaw) * BACK
+      );
+      this.camera.lookAt(
+        this.position.x,
+        this.position.y + EYE_HEIGHT * 0.6,
+        this.position.z
+      );
+    } else {
+      this.camera.position.set(
+        this.position.x,
+        this.position.y + EYE_HEIGHT,
+        this.position.z
+      );
+      this.camera.rotation.order = 'YXZ';
+      this.camera.rotation.y = this.yaw;
+      this.camera.rotation.x = this.pitch;
+    }
+
+    if (this.model) {
+      this.model.visible = this.thirdPerson;
+      this.model.position.copy(this.position);
+      this.model.rotation.y = this.yaw;
+    }
+  }
+
+  // Returns the player's eye position, independent of camera mode.
+  getEyePosition() {
+    return new THREE.Vector3(
       this.position.x,
       this.position.y + EYE_HEIGHT,
       this.position.z
     );
-    this.camera.rotation.order = 'YXZ';
-    this.camera.rotation.y = this.yaw;
-    this.camera.rotation.x = this.pitch;
   }
 
+  // Returns the direction the player is facing from yaw/pitch, independent of camera mode.
   getLookDirection() {
-    const dir = new THREE.Vector3();
-    this.camera.getWorldDirection(dir);
-    return dir;
+    const cp = Math.cos(this.pitch);
+    return new THREE.Vector3(
+      -Math.sin(this.yaw) * cp,
+      Math.sin(this.pitch),
+      -Math.cos(this.yaw) * cp
+    );
   }
 
   overlapsAABB(minX, minY, minZ, maxX, maxY, maxZ) {

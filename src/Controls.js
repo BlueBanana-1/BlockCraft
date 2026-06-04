@@ -13,6 +13,9 @@ export class Controls {
     // Hotbar digit pressed this frame (0-8 for slots 1-9, or -1)
     this.hotbarKeyThisFrame = -1;
     this.scrollDelta = 0;
+
+    // One-shot view toggle (R key)
+    this.viewToggleThisFrame = false;
   }
 
   init(canvas) {
@@ -27,6 +30,7 @@ export class Controls {
         const d = parseInt(e.code[5]);
         if (d >= 1 && d <= 9) this.hotbarKeyThisFrame = d - 1;
       }
+      if (e.code === 'KeyR') this.viewToggleThisFrame = true;
     });
 
     window.addEventListener('keyup', (e) => {
@@ -88,5 +92,11 @@ export class Controls {
     const s = this.scrollDelta;
     this.scrollDelta = 0;
     return s;
+  }
+
+  consumeViewToggle() {
+    const v = this.viewToggleThisFrame;
+    this.viewToggleThisFrame = false;
+    return v;
   }
 }
